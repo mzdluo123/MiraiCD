@@ -34,7 +34,7 @@ object MiraiCDMain : KotlinPlugin(
     private val runningCount = AtomicInteger(0)
 
 
-    @OptIn(ExperimentalCommandDescriptors::class)
+
     override fun onEnable() {
         logger.info { "Plugin loaded" }
         configFolder.mkdir()
