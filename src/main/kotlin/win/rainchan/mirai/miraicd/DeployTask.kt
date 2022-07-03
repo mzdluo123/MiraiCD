@@ -1,5 +1,6 @@
 package win.rainchan.mirai.miraicd
 
+import org.apache.commons.io.FileUtils
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Path
@@ -8,6 +9,7 @@ import kotlin.io.path.exists
 
 
 class DeployTask(val baseFolder:Path,
+                 val consoleFolder:Path,
                  val repoName:String,
                  val repoUrl:String,
                  val branchName:String,
@@ -51,13 +53,25 @@ class DeployTask(val baseFolder:Path,
         }
     }
 
+    fun rmOldPlugin(){
+        FileUtils.deleteDirectory(baseFolder.resolve(repoName).resolve("build").resolve("mirai").toFile())
+    }
+
+    fun cpNewPlugin(){
+        FileUtils.copyDirectory(baseFolder.resolve(repoName).resolve("build").resolve("mirai").toFile(),
+            consoleFolder.resolve("plugins").toFile()
+        )
+    }
+
     fun deploy(){
         thread {
             if (!baseFolder.resolve(repoName).exists()){
                 clone()
             }
             pull()
+            rmOldPlugin()
             runBuild()
+            cpNewPlugin()
         }
     }
 }

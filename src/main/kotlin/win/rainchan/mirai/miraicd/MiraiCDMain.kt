@@ -23,7 +23,7 @@ object MiraiCDMain : KotlinPlugin(
         dataFolder.mkdir()
         server = WebHookServer(8000,this)
         server.start()
-        val task = DeployTask(dataFolderPath,"MiraiCD","git@github.com:mzdluo123/MiraiCD.git","master","buildPlugin")
+        val task = DeployTask(dataFolderPath,MiraiConsole.INSTANCE.rootPath,"MiraiCD","git@github.com:mzdluo123/MiraiCD.git","master","buildPlugin")
         task.deploy()
 
     }
