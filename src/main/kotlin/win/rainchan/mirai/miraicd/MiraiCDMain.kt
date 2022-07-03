@@ -62,6 +62,7 @@ object MiraiCDMain : KotlinPlugin(
     }
 
     override fun onPush(repo: String, branch: String) {
+        logger.info("onPush ${repo} ${branch}")
         val i = configList[repo] ?: return
         if (i.branch.isEmpty()) {
             return
@@ -75,7 +76,7 @@ object MiraiCDMain : KotlinPlugin(
     private fun loadConfig() {
         for (i in configFolderPath.listDirectoryEntries()) {
             val item = Yaml.decodeFromString(DeployConfig.serializer(), i.readText())
-            configList[i.name] = item
+            configList[i.name.split(".")[0]] = item
         }
     }
 
