@@ -25,13 +25,8 @@ class WebHookServer(port:Int, private val handler: WebHookHandler, path:String =
        }
     }
 
-    override fun handle(exchange: HttpExchange) {
-        val rsp = "ok".toByteArray()
-        exchange.sendResponseHeaders(200, rsp.size.toLong())
-        exchange.responseBody.write(rsp)
-        exchange.responseBody.close()
-         val headers = exchange.requestHeaders["X-GitHub-Event"]?.first() ?: return
-
+    private fun processReq(exchange: HttpExchange){
+        val headers = exchange.requestHeaders["X-GitHub-Event"]?.first() ?:return
         try {
             val content = Json.parseToJsonElement(exchange.requestBody.readBytes().decodeToString())
             println(content)
@@ -56,9 +51,19 @@ class WebHookServer(port:Int, private val handler: WebHookHandler, path:String =
 
                 }
             }
+
             exchange.close()
         } catch (e: SerializationException){
             println(e.toString())
         }
+    }
+
+
+    override fun handle(exchange: HttpExchange) {
+        processReq(exchange)
+        val rsp = "ok".toByteArray()
+        exchange.sendResponseHeaders(200, rsp.size.toLong())
+        exchange.responseBody.write(rsp)
+        exchange.responseBody.close()
     }
 }
