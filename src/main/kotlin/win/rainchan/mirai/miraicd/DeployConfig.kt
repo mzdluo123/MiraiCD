@@ -12,7 +12,7 @@ data class DeployConfig(
 ){
     fun toTask( baseFolder: Path,
                 consoleFolder: Path,
-    repoName:String)=
+                repoName:String)=
         DeployTask(
             baseFolder,
             consoleFolder,repoName,repo_url,branch,build_task)

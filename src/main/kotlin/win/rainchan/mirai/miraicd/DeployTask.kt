@@ -32,7 +32,7 @@ class DeployTask(val baseFolder:Path,
             }
             println(line)
         }
-        println("cmd finish")
+        println("====run success===")
         if ( p.exitValue() != 0){
             error("cmd execute error")
         }
