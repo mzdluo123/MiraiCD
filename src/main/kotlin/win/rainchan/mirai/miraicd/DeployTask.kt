@@ -1,5 +1,7 @@
 package win.rainchan.mirai.miraicd
 
+import net.mamoe.mirai.console.MiraiConsole
+import net.mamoe.mirai.console.command.CommandManager
 import org.apache.commons.io.FileUtils
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -63,8 +65,9 @@ class DeployTask(val baseFolder:Path,
         )
     }
 
+
     fun deploy(){
-        thread {
+
             if (!baseFolder.resolve(repoName).exists()){
                 clone()
             }
@@ -73,5 +76,5 @@ class DeployTask(val baseFolder:Path,
             runBuild()
             cpNewPlugin()
         }
-    }
+
 }
