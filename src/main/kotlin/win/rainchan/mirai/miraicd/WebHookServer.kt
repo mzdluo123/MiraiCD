@@ -20,38 +20,25 @@ class WebHookServer(port:Int, private val handler: WebHookHandler, path:String =
     }
 
     fun start(){
-       thread {
            httpServer.start()
-       }
     }
 
     private fun processReq(exchange: HttpExchange){
         val headers = exchange.requestHeaders["X-GitHub-Event"]?.first() ?:return
         try {
             val content = Json.parseToJsonElement(exchange.requestBody.readBytes().decodeToString())
-            println(content)
+//            println(content)
             val repository =  content.jsonObject["repository"] ?: return
-            val full_name = repository.jsonObject["full_name"]?.jsonPrimitive?.content ?: return
+            val full_name = repository.jsonObject["name"]?.jsonPrimitive?.content ?: return
             val ref = content.jsonObject["ref"]?.jsonPrimitive?.content?.split("/") ?: return
-            when (headers){
-                "create" ->{
-                    val ref_type = content.jsonObject["ref_type"]?.jsonPrimitive?.content
-                    if (ref_type != "tag"){
-                        return
-                    }
+           if (headers ==  "push"){
+                if (ref[1] == "tags"){
                     handler.onTag(full_name,ref[2])
                 }
-                "push"->{
-                    if (ref[1] == "tags"){
-                        handler.onTag(full_name,ref[2])
-                    }
-                    if (ref[1] == "heads"){
-                        handler.onPush(full_name,ref[2])
-                    }
-
+                if (ref[1] == "heads"){
+                    handler.onPush(full_name,ref[2])
                 }
             }
-
             exchange.close()
         } catch (e: SerializationException){
             println(e.toString())

@@ -1,5 +1,6 @@
 package win.rainchan.mirai.miraicd
 
+import net.mamoe.mirai.console.MiraiConsole
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.utils.info
@@ -22,6 +23,8 @@ object MiraiCDMain : KotlinPlugin(
         dataFolder.mkdir()
         server = WebHookServer(8000,this)
         server.start()
+        val task = DeployTask(dataFolderPath,"MiraiCD","git@github.com:mzdluo123/MiraiCD.git","master","buildPlugin")
+        task.deploy()
 
     }
 
