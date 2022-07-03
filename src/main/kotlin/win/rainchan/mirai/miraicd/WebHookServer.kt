@@ -39,7 +39,6 @@ class WebHookServer(port:Int, private val handler: WebHookHandler, path:String =
                     handler.onPush(full_name,ref[2])
                 }
             }
-            exchange.close()
         } catch (e: SerializationException){
             println(e.toString())
         }
