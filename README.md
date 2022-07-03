@@ -20,6 +20,8 @@ repo_url: "仓库链接"
 tag_regex: "v.*"
 ```
 
+如果使用ssh仓库链接，首先需要配置deploy key，然后信任服务器密钥
+
 之后需要在GitHub对应仓库中添加webhook
 * url: http://你的服务器地址:5412/webhook
 * Content type: json

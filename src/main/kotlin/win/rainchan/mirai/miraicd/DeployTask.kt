@@ -33,6 +33,7 @@ class DeployTask(val baseFolder:Path,
             println(line)
         }
         println("====run success===")
+        p.waitFor()
         if ( p.exitValue() != 0){
             error("cmd execute error")
         }
@@ -51,7 +52,8 @@ class DeployTask(val baseFolder:Path,
         if (osName.startsWith("Windows")) {
             runCMD(listOf("./gradlew.bat","--no-daemon",buildTask),baseFolder.resolve(repoName))
         } else {
-            runCMD(listOf("chmod","+x","gradlew","&&","./gradlew","--no-daemon",buildTask),baseFolder.resolve(repoName))
+            runCMD(listOf("chmod","+x","gradlew"),baseFolder.resolve(repoName))
+            runCMD(listOf("./gradlew","--no-daemon",buildTask),baseFolder.resolve(repoName))
         }
     }
 
