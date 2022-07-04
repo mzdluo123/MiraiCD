@@ -1,12 +1,9 @@
 package win.rainchan.mirai.miraicd
 
-import net.mamoe.mirai.console.MiraiConsole
-import net.mamoe.mirai.console.command.CommandManager
 import org.apache.commons.io.FileUtils
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.file.Path
-import kotlin.concurrent.thread
 import kotlin.io.path.exists
 
 
@@ -40,10 +37,15 @@ class DeployTask(val baseFolder:Path,
 
     fun clone(branchName:String) = runCMD(listOf("git","clone","-b",branchName,repoUrl),baseFolder)
 
-    fun pull(branchOrTag:String){
+    fun checkout(branchOrTag:String){
         runCMD(listOf("git","reset","HEAD","."),baseFolder.resolve(repoName))
         runCMD(listOf("git","fetch"),baseFolder.resolve(repoName))
         runCMD(listOf("git","checkout",branchOrTag),baseFolder.resolve(repoName))
+    }
+
+    fun pull(branch:String){
+        runCMD(listOf("git","reset","HEAD","."),baseFolder.resolve(repoName))
+        runCMD(listOf("git","checkout",branch),baseFolder.resolve(repoName))
         runCMD(listOf("git","pull"),baseFolder.resolve(repoName))
     }
 
@@ -68,14 +70,24 @@ class DeployTask(val baseFolder:Path,
     }
 
 
-    fun deploy(branchOrTag: String){
+    fun deployBranch(branch: String){
             if (!baseFolder.resolve(repoName).exists()){
-                clone(branchOrTag)
+                clone(branch)
             }
-            pull(branchOrTag)
+            pull(branch)
             rmOldPlugin()
             runBuild()
             cpNewPlugin()
         }
+
+    fun deployTag(tag: String){
+        if (!baseFolder.resolve(repoName).exists()){
+            clone(tag)
+        }
+        checkout(tag)
+        rmOldPlugin()
+        runBuild()
+        cpNewPlugin()
+    }
 
 }

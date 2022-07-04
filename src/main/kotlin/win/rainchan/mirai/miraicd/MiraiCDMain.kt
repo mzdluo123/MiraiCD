@@ -64,7 +64,7 @@ object MiraiCDMain : KotlinPlugin(
         val regex = i.tag_regex.toRegex()
         if (regex.matches(tag)) {
             val task = i.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, repo)
-            startDeployTask(task,tag)
+            startDeployTag(task,tag)
         }
     }
 
@@ -76,7 +76,7 @@ object MiraiCDMain : KotlinPlugin(
         }
         if (branch == i.branch) {
             val task = i.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, repo)
-            startDeployTask(task,branch)
+            startDeployBranch(task,branch)
         }
     }
 
@@ -91,11 +91,11 @@ object MiraiCDMain : KotlinPlugin(
         }
     }
 
-    private fun startDeployTask(task: DeployTask,branchOrTag:String) {
+    private fun startDeployBranch(task: DeployTask,branchOrTag:String) {
         thread {
            try {
                runningCount.addAndGet(1)
-               task.deploy(branchOrTag)
+               task.deployBranch(branchOrTag)
                if (runningCount.decrementAndGet() == 0){
                    restart()
                }
@@ -105,22 +105,37 @@ object MiraiCDMain : KotlinPlugin(
             runningCount.decrementAndGet()
         }
     }
+
+    private fun startDeployTag(task: DeployTask,tag:String) {
+        thread {
+            try {
+                runningCount.addAndGet(1)
+                task.deployTag(tag)
+                if (runningCount.decrementAndGet() == 0){
+                    restart()
+                }
+            }catch (e:java.lang.Exception){
+                logger.error(e)
+            }
+            runningCount.decrementAndGet()
+        }
+    }
+
+
     fun manualDeploy(){
         for (i in configMap.keys){
             val task = configMap[i] ?: continue
-            startDeployTask(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, i),task.branch)
+            startDeployBranch(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, i),task.branch)
         }
     }
 
     fun manualDeploy(project:String,branchOrTag: String){
-
             val task = configMap[project]
             if (task == null){
                 logger.error("项目不存在")
                 return
             }
-            startDeployTask(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, project),branchOrTag)
-
+            startDeployTag(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, project),branchOrTag)
     }
 
     private fun restart(){
@@ -135,6 +150,7 @@ class DeployCmd: SimpleCommand(MiraiCDMain,"deploy", description = "手动部署
     suspend fun onCmd(){
         MiraiCDMain.manualDeploy()
     }
+    @Handler
     suspend fun onCmd2(project:String,branchOrTag: String){
         MiraiCDMain.manualDeploy(project,branchOrTag)
     }
