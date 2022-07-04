@@ -38,3 +38,14 @@ do
     sleep 1 
 done
 ```
+
+如果你是windows，请使用下面的脚本，同时插件也会自动切换到Windows模式
+
+```bat
+@echo off
+:loop
+xcopy /S /Y deploy_tmp plugins
+cmd /c .\mcl.cmd
+timeout 1
+goto loop
+```

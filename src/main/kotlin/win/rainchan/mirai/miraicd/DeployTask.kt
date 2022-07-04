@@ -13,6 +13,7 @@ class DeployTask(val baseFolder:Path,
                  val repoUrl:String,
                  val buildTask:String) {
     private fun runCMD(cmd:List<String>,workingDir:Path){
+        println("====start run cmd====")
         val builder = ProcessBuilder(
            cmd
         )
@@ -28,7 +29,7 @@ class DeployTask(val baseFolder:Path,
             }
             println(line)
         }
-        println("====run finish===")
+        println("====run finish====")
         p.waitFor()
         if ( p.exitValue() != 0){
             error("cmd execute error")
@@ -52,7 +53,7 @@ class DeployTask(val baseFolder:Path,
     fun runBuild() {
         val osName = System.getProperty("os.name")
         if (osName.startsWith("Windows")) {
-            runCMD(listOf("./gradlew.bat","--no-daemon",buildTask),baseFolder.resolve(repoName))
+            runCMD(listOf("cmd","/c","gradlew.bat","--no-daemon",buildTask),baseFolder.resolve(repoName))
         } else {
             runCMD(listOf("chmod","+x","gradlew"),baseFolder.resolve(repoName))
             runCMD(listOf("./gradlew","--no-daemon",buildTask),baseFolder.resolve(repoName))
@@ -64,9 +65,15 @@ class DeployTask(val baseFolder:Path,
     }
 
     fun cpNewPlugin(){
-        FileUtils.copyDirectory(baseFolder.resolve(repoName).resolve("build").resolve("mirai").toFile(),
-            consoleFolder.resolve("plugins").toFile()
-        )
+        if ( System.getProperty("os.name").startsWith("Windows")) {
+            FileUtils.copyDirectory(baseFolder.resolve(repoName).resolve("build").resolve("mirai").toFile(),
+                consoleFolder.resolve("deploy_tmp").toFile()
+            )
+        }else{
+            FileUtils.copyDirectory(baseFolder.resolve(repoName).resolve("build").resolve("mirai").toFile(),
+                consoleFolder.resolve("plugins").toFile()
+            )
+        }
     }
 
 

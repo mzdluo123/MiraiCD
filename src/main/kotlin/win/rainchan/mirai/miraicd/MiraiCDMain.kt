@@ -9,6 +9,7 @@ import net.mamoe.mirai.console.command.ConsoleCommandSender
 import net.mamoe.mirai.console.command.SimpleCommand
 import net.mamoe.mirai.console.command.descriptor.ExperimentalCommandDescriptors
 import net.mamoe.mirai.console.plugin.PluginManager.INSTANCE.load
+import net.mamoe.mirai.console.plugin.info
 import net.mamoe.mirai.console.plugin.jvm.JvmPluginDescription
 import net.mamoe.mirai.console.plugin.jvm.KotlinPlugin
 import net.mamoe.mirai.message.data.PlainText
@@ -34,11 +35,13 @@ object MiraiCDMain : KotlinPlugin(
     private val runningCount = AtomicInteger(0)
 
 
-
     override fun onEnable() {
         logger.info { "MiraiCD loaded" }
         configFolder.mkdir()
         dataFolder.mkdir()
+        if ( System.getProperty("os.name").startsWith("Windows")) {
+            initWindowsMode()
+        }
         loadConfig()
         PlConfig.reload()
         DeployCmd().register()
@@ -53,6 +56,11 @@ object MiraiCDMain : KotlinPlugin(
 //            "buildPlugin"
 //        )
 //        startDeployTask(task)
+    }
+    private fun initWindowsMode(){
+        logger.info("Use Windows Mode")
+        val path =  MiraiConsole.INSTANCE.rootPath.resolve("deploy_tmp")
+        path.toFile().mkdir()
     }
 
     override fun onTag(repo: String, tag: String) {
