@@ -43,8 +43,10 @@ done
 
 ```bat
 @echo off
+mkdir deploy_tmp
 :loop
 xcopy /S /Y deploy_tmp plugins
+del /F /S /Q deploy_tmp
 cmd /c .\mcl.cmd
 timeout 1
 goto loop
