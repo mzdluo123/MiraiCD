@@ -31,7 +31,7 @@ class DeployTask(val baseFolder:Path,
             }
             println(line)
         }
-        println("====run success===")
+        println("====run finish===")
         p.waitFor()
         if ( p.exitValue() != 0){
             error("cmd execute error")
@@ -42,8 +42,9 @@ class DeployTask(val baseFolder:Path,
 
     fun pull(branchOrTag:String){
         runCMD(listOf("git","reset","HEAD","."),baseFolder.resolve(repoName))
-        runCMD(listOf("git","pull"),baseFolder.resolve(repoName))
+        runCMD(listOf("git","fetch"),baseFolder.resolve(repoName))
         runCMD(listOf("git","checkout",branchOrTag),baseFolder.resolve(repoName))
+        runCMD(listOf("git","pull"),baseFolder.resolve(repoName))
     }
 
     fun runBuild() {

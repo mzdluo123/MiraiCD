@@ -36,7 +36,7 @@ object MiraiCDMain : KotlinPlugin(
 
 
     override fun onEnable() {
-        logger.info { "Plugin loaded" }
+        logger.info { "MiraiCD loaded" }
         configFolder.mkdir()
         dataFolder.mkdir()
         loadConfig()
@@ -112,6 +112,17 @@ object MiraiCDMain : KotlinPlugin(
         }
     }
 
+    fun manualDeploy(project:String,branchOrTag: String){
+
+            val task = configMap[project]
+            if (task == null){
+                logger.error("项目不存在")
+                return
+            }
+            startDeployTask(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, project),branchOrTag)
+
+    }
+
     private fun restart(){
         runBlocking {
             CommandManager.INSTANCE.executeCommand(ConsoleCommandSender, PlainText("/stop"), false)
@@ -123,5 +134,8 @@ class DeployCmd: SimpleCommand(MiraiCDMain,"deploy", description = "手动部署
     @Handler
     suspend fun onCmd(){
         MiraiCDMain.manualDeploy()
+    }
+    suspend fun onCmd2(project:String,branchOrTag: String){
+        MiraiCDMain.manualDeploy(project,branchOrTag)
     }
 }
