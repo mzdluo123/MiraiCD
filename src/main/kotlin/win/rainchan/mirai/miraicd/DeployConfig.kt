@@ -15,7 +15,7 @@ data class DeployConfig(
                 repoName:String)=
         DeployTask(
             baseFolder,
-            consoleFolder,repoName,repo_url,branch,build_task)
+            consoleFolder,repoName,repo_url,build_task)
 
 
 }

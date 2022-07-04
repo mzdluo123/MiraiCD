@@ -64,7 +64,7 @@ object MiraiCDMain : KotlinPlugin(
         val regex = i.tag_regex.toRegex()
         if (regex.matches(tag)) {
             val task = i.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, repo)
-            startDeployTask(task)
+            startDeployTask(task,tag)
         }
     }
 
@@ -76,7 +76,7 @@ object MiraiCDMain : KotlinPlugin(
         }
         if (branch == i.branch) {
             val task = i.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, repo)
-            startDeployTask(task)
+            startDeployTask(task,branch)
         }
     }
 
@@ -91,11 +91,11 @@ object MiraiCDMain : KotlinPlugin(
         }
     }
 
-    private fun startDeployTask(task: DeployTask) {
+    private fun startDeployTask(task: DeployTask,branchOrTag:String) {
         thread {
            try {
                runningCount.addAndGet(1)
-               task.deploy()
+               task.deploy(branchOrTag)
                if (runningCount.decrementAndGet() == 0){
                    restart()
                }
@@ -108,7 +108,7 @@ object MiraiCDMain : KotlinPlugin(
     fun manualDeploy(){
         for (i in configMap.keys){
             val task = configMap[i] ?: continue
-            startDeployTask(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, i))
+            startDeployTask(task.toTask(dataFolderPath, MiraiConsole.INSTANCE.rootPath, i),task.branch)
         }
     }
 

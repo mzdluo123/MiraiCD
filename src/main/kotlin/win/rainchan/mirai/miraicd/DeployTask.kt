@@ -14,7 +14,6 @@ class DeployTask(val baseFolder:Path,
                  val consoleFolder:Path,
                  val repoName:String,
                  val repoUrl:String,
-                 val branchName:String,
                  val buildTask:String) {
     private fun runCMD(cmd:List<String>,workingDir:Path){
         val builder = ProcessBuilder(
@@ -39,12 +38,12 @@ class DeployTask(val baseFolder:Path,
         }
     }
 
-    fun clone() = runCMD(listOf("git","clone","-b",branchName,repoUrl),baseFolder)
+    fun clone(branchName:String) = runCMD(listOf("git","clone","-b",branchName,repoUrl),baseFolder)
 
-    fun pull(){
+    fun pull(branchOrTag:String){
         runCMD(listOf("git","reset","HEAD","."),baseFolder.resolve(repoName))
-        runCMD(listOf("git","checkout",branchName),baseFolder.resolve(repoName))
         runCMD(listOf("git","pull"),baseFolder.resolve(repoName))
+        runCMD(listOf("git","checkout",branchOrTag),baseFolder.resolve(repoName))
     }
 
     fun runBuild() {
@@ -68,12 +67,11 @@ class DeployTask(val baseFolder:Path,
     }
 
 
-    fun deploy(){
-
+    fun deploy(branchOrTag: String){
             if (!baseFolder.resolve(repoName).exists()){
-                clone()
+                clone(branchOrTag)
             }
-            pull()
+            pull(branchOrTag)
             rmOldPlugin()
             runBuild()
             cpNewPlugin()
