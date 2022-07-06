@@ -6,7 +6,7 @@
 
 在`config\win.rainchan.mirai.miraicd\projects`下创建`仓库名称.yml`文件
 
-填入下面内容
+填入下面内容，切记仓库链接需要使用`""`包裹
 
 ```yml
 repo_url: "仓库链接"
@@ -51,3 +51,13 @@ cmd /c .\mcl.cmd
 timeout 1
 goto loop
 ```
+
+# 常见问题
+## 1. 使用Nginx进行反代后，API出现502错误
+这时候应当检查你的Github Webhook的Content type是否设置正确
+
+没有反代的错误这个我倒是不清楚(~~丢给雨酱~~)
+
+## 2. 更新时出现Git错误
+like this ```Use '--' to separate paths from revisions, like this:```
+这时应当检查一下你的repo_url是否配置正确，是否缺少`""`包裹
